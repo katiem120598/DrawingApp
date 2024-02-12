@@ -4,7 +4,7 @@
 function setup() {
   createCanvas (900,900);
   background('orange');
-  console.log("Hello")
+  console.log("Helloo")
 }
 
 function draw() {
