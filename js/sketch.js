@@ -8,6 +8,7 @@ let geometry = [];
 let shapeMode = 'poly';
 // A container for the vertices of a polygon
 let polyVertices = [];
+let vertlist = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -87,7 +88,16 @@ function mousePressed() {
   }
 }
 
+const shape = {
+  start: startPoint,
+  end: {
+    x: mouseX, 
+    y: mouseY,
+  }
+};
+
 // If mouse released, save in memory the shape that was created
+/*
 function mouseReleased() {
   if (mouseButton === LEFT)
   {
@@ -95,6 +105,7 @@ function mouseReleased() {
     {
       // do nothing
     }
+    /*
     else
     {
       isDrawing = false;
@@ -108,9 +119,12 @@ function mouseReleased() {
       };
       geometry.push(shape);
     }
+  
   }
 }
+*/
 
+/*
 // Let user choose the type of geometry to draw
 function keyPressed() {
   switch(key)
@@ -123,6 +137,7 @@ function keyPressed() {
   }
   console.log('Shape Mode changed to "' + shapeMode + '"');
 }
+*/
 
 // Calculate the distance between two points
 function distance(a, b) {
