@@ -7,6 +7,7 @@ function setup() {
   background(220);
 }
 
+
 function draw() {
   background(220);
 
@@ -21,37 +22,33 @@ function draw() {
 
   // Draw the current blob points
   beginShape();
-
   for (let i = 0; i < blobPoints.length; i++) {
     curveVertex(blobPoints[i].x, blobPoints[i].y);
   }
-  if (isClosed) {
-    endShape(CLOSE); // Closes the shape by drawing a line from the last point to the first
-  } else {
-    endShape();
-  }
+  endShape()
 }
 
+function mousePressed(){
+    blobPoints = []; // Reset points for a new shape
+    blobPoints.push(createVector(mouseX, mouseY)); // Add the first point
+}
 
 function mouseDragged() {
-  if (!isClosed) { // Only add points if the shape is not closed
-    const here = {
-        x: mouseX,
-        y: mouseY
-      }
-      blobPoints.push(here)
-      blobPoints.push(here)
     blobPoints.push(createVector(mouseX, mouseY));
-  }
 }
 
 function mouseReleased() {
   // Save the current shape if it's closed, then reset for a new shape
-  if (isClosed) {
-    blobPoints.push(createVector(mouseX,mouseY))
-    blobPoints.push(createVector(mouseX,mouseY))
-    geometry.push([...blobPoints]); // Copy the current blobPoints to geometry
-    blobPoints = []; // Reset blobPoints for the next shape
-    isClosed = false; // Reset isClosed for the next shape
+  if (distance((blobPoints[0].x,blobPoints[0].y),(blobPoints[blobPoints.length - 1].x,blobPoints[blobPoints.length - 1].y)) < 15) 
+  {
+    blobPoints.push(createVector(blobPoints[0].x,blobPoints[0].y))
   }
-}
+    geometry.push([...blobPoints]); // Copy the current blobPoints to geometry
+  }
+
+  function distance(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
