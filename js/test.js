@@ -34,12 +34,12 @@ function draw() {
       }
     }
     for (let pt of shape){
-      pt.x+=(varx*facx[i]+Math.sin(frameCount)*(Math.random()-0.5)*10*facx[i]);
-      pt.y+=(vary*facy[i]+Math.sin(frameCount)*(Math.random()-0.5)*10*facy[i]);
+      pt.x+=(varx*facx[i]);
+      pt.y+=(vary*facy[i]);
     }
     beginShape();
     for (let pt of shape) {
-      curveVertex(pt.x, pt.y);
+      curveVertex(pt.x+Math.sin(6.28/frameCount)*(Math.random()-0.5)*10000*facx[i], pt.y+Math.sin(6.28/frameCount)*(Math.random()-0.5)*10000*facy[i]);
     }
     endShape(CLOSE); // Assuming all shapes are closed for simplicity
   }
