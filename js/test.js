@@ -5,10 +5,6 @@ let randomx = [];
 let randomy = [];
 let facx=[];
 let facy=[];
-let oscSpeedX = [];
-let oscSpeedY = [];
-let oscAmplitudeX = [];
-let oscAmplitudeY = [];
 
 function setup() {
   createCanvas(windowWidth-100,windowHeight-50);
@@ -25,12 +21,6 @@ function draw() {
     let shape = geometry[i];
     let varx = randomx[i]; // Use the pre-stored random value for this shape
     let vary = randomy[i]; 
-     
-  /*
-    scalex[i] = Math.random()*1.5
-    
-    scaley[i] = Math.random()*1.5
-    */
     for (let pt of shape){
       if (pt.x+varx>windowWidth-100 || pt.x+varx<0){
         facx[i]=facx[i]*(-1);
@@ -44,17 +34,14 @@ function draw() {
       }
     }
     for (let pt of shape){
-      let oscX = Math.sin(frameCount * oscSpeedX[i]) * oscAmplitudeX[i];
-      let oscY = Math.cos(frameCount * oscSpeedY[i]) * oscAmplitudeY[i];
-      pt.x+=(varx*facx[i]);
-      pt.y+=(vary*facy[i]);
+      pt.x+=(varx*facx[i]+Math.sin(frameCount)*(Math.random()-0.5)*10*facx[i]);
+      pt.y+=(vary*facy[i]+Math.sin(frameCount)*(Math.random()-0.5)*10*facy[i]);
     }
     beginShape();
     for (let pt of shape) {
-      // Apply oscillation to the vertex position
       curveVertex(pt.x, pt.y);
     }
-    endShape(CLOSE); // Assuming all shapes are closed for simplicity // Assuming all shapes are closed for simplicity
+    endShape(CLOSE); // Assuming all shapes are closed for simplicity
   }
 
   // Draw the current blob points
@@ -83,10 +70,6 @@ function mouseReleased() {
     randomy.push((Math.random()-0.5)*Math.random()*4);
     facx.push(1);
     facy.push(1);
-    oscSpeedX.push(random(0.05, 0.1)); // Random speed between 0.05 and 0.1
-    oscSpeedY.push(random(0.05, 0.1));
-    oscAmplitudeX.push(random(5, 15)); // Random amplitude between 5 and 15
-    oscAmplitudeY.push(random(5, 15));
   }
 
   function distance(a, b) {
