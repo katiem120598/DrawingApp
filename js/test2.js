@@ -1,5 +1,4 @@
 let blobPoints = [];
-let isClosed = false;
 let geometry = [];
 let randomx = [];
 let randomy = [];
@@ -12,14 +11,13 @@ let oscAmplitudeY = [];
 
 function setup() {
   createCanvas(windowWidth-100,windowHeight-50);
-  background(0);
+  background(90);
   frameRate(60);
-  //stroke(255,255,255,0);
+  stroke(255,255,255,0);
 }
 
-
 function draw() {
-  background(0);
+  background(90);
   // Draw all previous shapes
   for (let i = 0; i < geometry.length; i++) {
     let shape = geometry[i];
@@ -65,6 +63,9 @@ function draw() {
   endShape()
 }
 
+
+
+
 function mousePressed(){
     blobPoints = []; // Reset points for a new shape
     blobPoints.push(createVector(mouseX, mouseY)); // Add the first point
@@ -83,14 +84,5 @@ function mouseReleased() {
     randomy.push((Math.random()-0.5)*Math.random()*4);
     facx.push(1);
     facy.push(1);
-    oscSpeedX.push(random(0.05, 0.1)); // Random speed between 0.05 and 0.1
-    oscSpeedY.push(random(0.05, 0.1));
-    oscAmplitudeX.push(random(5, 15)); // Random amplitude between 5 and 15
-    oscAmplitudeY.push(random(5, 15));
   }
 
-  function distance(a, b) {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
