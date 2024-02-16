@@ -64,11 +64,39 @@ function draw() {
     beginShape();
     for (let pt of shape) {
       // Apply oscillation to the vertex position
-      if (frameCount%720==0){
+      if (frameCount%360==0){
         randscalex[i] = Math.random()*defrate+defadj;
         randscaley[i] = Math.random()*defrate+defadj;
         randscalebotx[i] = Math.random()*defrate+defadj;
         randscaleboty[i] = Math.random()*defrate+defadj;
+        if(randscalex[i-1]>1)
+        {
+          if(randscalex[i]>1)
+          {
+            randscalex[i]=2-randscalex[i];
+          }
+        }
+        if(randscaley[i-1]>1)
+        {
+          if(randscaley[i]>1)
+          {
+            randscaley[i]=2-randscaley[i];
+          }
+        }
+        if(randscalebotx[i-1]>1)
+        {
+          if(randscalebotx[i]>1)
+          {
+            randscalebotx[i]=2-randscalebotx[i];
+          }
+        }
+        if(randscaleboty[i-1]>1)
+        {
+          if(randscaleboty[i]>1)
+          {
+            randscaleboty[i]=2-randscaleboty[i];
+          }
+        }
       }
       if (Math.floor(frameCount/360)%2==0 & (pt.x-centerX)>0)
       {
@@ -78,15 +106,6 @@ function draw() {
       else if(Math.floor(frameCount/360)%2==0 & (pt.x-centerX)<0){
         pt.x = (pt.x-centerX)*botx+centerX;
         pt.y = (pt.y-centerY)*boty+centerY;
-      }
-      else if (pt.x-centerX>0)
-      {
-        pt.x = (pt.x-centerX)*(2-scalex)+centerX;
-        pt.y = (pt.y-centerY)*(2-scaley)+centerY;
-      }
-      else{
-        pt.x = (pt.x-centerX)*(2-botx)+centerX;
-        pt.y = (pt.y-centerY)*(2-boty)+centerY;
       }
       curveVertex(pt.x, pt.y);
     }
