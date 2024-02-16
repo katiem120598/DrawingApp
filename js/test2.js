@@ -8,21 +8,30 @@ let oscSpeedX = [];
 let oscSpeedY = [];
 let oscAmplitudeX = [];
 let oscAmplitudeY = [];
+let randoffx=[];
+let randoffy=[];
+let shapecent = [];
+let randscalex = [];
+let randscaley=[];
 
 function setup() {
   createCanvas(windowWidth-100,windowHeight-50);
-  background(90);
+  background(0);
   frameRate(60);
   stroke(255,255,255,0);
 }
 
 function draw() {
-  background(90);
+  background(0);
+  shapecent=[];
   // Draw all previous shapes
   for (let i = 0; i < geometry.length; i++) {
     let shape = geometry[i];
     let varx = randomx[i]; // Use the pre-stored random value for this shape
     let vary = randomy[i]; 
+    let sumX = 0, sumY = 0;
+    let scalex = randscalex[i];
+    let scaley = randscaley[i];
      
   /*
     scalex[i] = Math.random()*1.5
@@ -42,14 +51,31 @@ function draw() {
       }
     }
     for (let pt of shape){
-      let oscX = Math.sin(frameCount * oscSpeedX[i]) * oscAmplitudeX[i];
-      let oscY = Math.cos(frameCount * oscSpeedY[i]) * oscAmplitudeY[i];
       pt.x+=(varx*facx[i]);
       pt.y+=(vary*facy[i]);
+      sumX += pt.x;
+      sumY += pt.y;
     }
+    let centerX = sumX / shape.length;
+    let centerY = sumY / shape.length;
+
     beginShape();
     for (let pt of shape) {
       // Apply oscillation to the vertex position
+      if (frameCount%720==0){
+        randscalex[i] = Math.random()/200+0.9975
+        randscaley[i] = Math.random()/200+0.9975
+      }
+      if (Math.floor(frameCount/360)%2==0)
+      {
+        pt.x = (pt.x-centerX)*scalex+centerX;
+        pt.y = (pt.y-centerY)*scaley+centerY;
+      }
+      else
+      {
+        pt.x = (pt.x-centerX)*(2-scalex)+centerX;
+        pt.y = (pt.y-centerY)*(2-scaley)+centerY;
+      }
       curveVertex(pt.x, pt.y);
     }
     endShape(CLOSE); // Assuming all shapes are closed for simplicity // Assuming all shapes are closed for simplicity
@@ -80,9 +106,12 @@ function mouseReleased() {
   //if (distance((blobPoints[0].x,blobPoints[0].y),(blobPoints[blobPoints.length - 1].x,blobPoints[blobPoints.length - 1].y)) < 15) 
     blobPoints.push(createVector(blobPoints[0].x,blobPoints[0].y))
     geometry.push([...blobPoints]); // Copy the current blobPoints to geometry
-    randomx.push((Math.random()-0.5)*Math.random()*4);
-    randomy.push((Math.random()-0.5)*Math.random()*4);
+    randomx.push((Math.random()-0.5)*4);
+    randomy.push((Math.random()-0.5)*4);
     facx.push(1);
     facy.push(1);
+    blobPoints=[];
+    randscalex.push(Math.random()/200+0.9975);
+    randscaley.push(Math.random()/200+0.9975)
   }
 
