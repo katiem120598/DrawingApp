@@ -13,6 +13,7 @@ let randscalebotx = [];
 let randscaleboty = [];
 let defrate = 1/300;
 let defadj = 1-defrate/2;
+let randtrans = [];
 
 function setup() {
   createCanvas(windowWidth-100,windowHeight-50);
@@ -24,6 +25,7 @@ function setup() {
 function draw() {
   background(0);
   shapecent=[];
+  
   // Draw all previous shapes
   for (let i = 0; i < geometry.length; i++) {
     let shape = geometry[i];
@@ -34,6 +36,7 @@ function draw() {
     let scaley = randscaley[i];
     let botx = randscalebotx[i];
     let boty = randscaleboty[i];
+    let transx = randtrans[i];
      
   /*
     scalex[i] = Math.random()*1.5
@@ -98,15 +101,27 @@ function draw() {
           }
         }
       }
-      if (Math.floor(frameCount/360)%2==0 & (pt.x-centerX)>0)
+      if ((pt.x-centerX)>0)
       {
+        //conceptually good but need to make a rounder/smoother/more accurate cut off
         pt.x = (pt.x-centerX)*scalex+centerX;
-        pt.y = (pt.y-centerY)*scaley+centerY;
+        //pt.x = pt.x+transx;
       }
-      else if(Math.floor(frameCount/360)%2==0 & (pt.x-centerX)<0){
+      //conceptually good but need to make a rounder/smoother/more accurate cut of
+      else if((pt.x-centerX)<0){
         pt.x = (pt.x-centerX)*botx+centerX;
+        //pt.x = pt.x-transx;
+      }
+      if ((pt.y-centerY)>0)
+      {
+        //conceptually good but need to make a rounder/smoother/more accurate cut off
+        pt.y =(pt.y-centerY)*scaley+centerY;
+      }
+      //conceptually good but need to make a rounder/smoother/more accurate cut of
+      else if((pt.y-centerY)<0){
         pt.y = (pt.y-centerY)*boty+centerY;
       }
+      checkAndResolveOverlaps();
       curveVertex(pt.x, pt.y);
     }
     endShape(CLOSE); // Assuming all shapes are closed for simplicity // Assuming all shapes are closed for simplicity
@@ -146,5 +161,40 @@ function mouseReleased() {
     randscaley.push(Math.random()*defrate+defadj);
     randscalebotx.push(Math.random()*defrate+defadj);
     randscaleboty.push(Math.random()*defrate+defadj);
+    randtrans.push((Math.random()-0.5)*.2);
   }
 
+  function distance(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function isPointInsideShape(point, shape) {
+    let count = 0;
+    for (let i = 0, j = shape.length - 1; i < shape.length; j = i++) {
+        let xi = shape[i].x, yi = shape[i].y;
+        let xj = shape[j].x, yj = shape[j].y;
+
+        let intersect = ((yi > point.y) != (yj > point.y))
+            && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+        if (intersect) count++;
+    }
+    // Odd count means point is inside
+    return count % 2 == 1;
+}
+function checkAndResolveOverlaps() {
+  for (let i = 0; i < geometry.length; i++) {
+      for (let j = 0; j < geometry.length; j++) {
+          if (i == j) continue; // Don't compare a shape with itself
+
+          for (let pt of geometry[i]) {
+              if (isPointInsideShape(pt, geometry[j])) {
+                  // pt from shape i is inside shape j
+                  console.log(`Shape ${i} overlaps with Shape ${j}`);
+                  
+              }
+          }
+      }
+  }
+}
