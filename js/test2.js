@@ -11,12 +11,20 @@ let randscalex = [];
 let randscaley=[];
 let randscalebotx = [];
 let randscaleboty = [];
-let defrate = 1/300;
-let defadj = 1-defrate/2;
+let defrate = 1/150;
+let defadj = 1-defrate/2+0.00010;
 let randtrans = [];
+let facxprev=[];
+let facyprev=[];
+let facxprev1=[];
+let facyprev1=[];
+var dimx;
+var dimy;
 
 function setup() {
-  createCanvas(windowWidth-100,windowHeight-50);
+  dimx = windowHeight-400;
+  dimy = dimx;
+  createCanvas(dimx,dimy);
   background(0);
   frameRate(60);
   //stroke(255,255,255,0);
@@ -36,7 +44,6 @@ function draw() {
     let scaley = randscaley[i];
     let botx = randscalebotx[i];
     let boty = randscaleboty[i];
-    let transx = randtrans[i];
      
   /*
     scalex[i] = Math.random()*1.5
@@ -44,13 +51,13 @@ function draw() {
     scaley[i] = Math.random()*1.5
     */
     for (let pt of shape){
-      if (pt.x+varx>windowWidth-100 || pt.x+varx<0){
+      if ((pt.x+varx>dimx || pt.x+varx<0)){
         facx[i]=facx[i]*(-1);
         break;
       }
     }
     for (let pt of shape){
-      if (pt.y+vary>windowHeight-50 || pt.y+vary<0){
+      if ((pt.y+vary>dimy || pt.y+vary<0)){
         facy[i]=facy[i]*(-1);
         break;
       }
@@ -121,7 +128,23 @@ function draw() {
         pt.y = (pt.y-centerY)*boty+centerY;
       }
     }
+    
     checkAndResolveOverlaps();
+    for (let i = geometry.length - 1; i >= 0; i--) {
+      if (!sizeConstraint(geometry[i])) {
+        // Remove the shape and associated properties
+        geometry.splice(i, 1);
+        randomx.splice(i, 1);
+        randomy.splice(i, 1);
+        facx.splice(i, 1);
+        facy.splice(i, 1);
+        randscalex.splice(i, 1);
+        randscaley.splice(i, 1);
+        randscalebotx.splice(i, 1);
+        randscaleboty.splice(i, 1);
+        randtrans.splice(i, 1);
+      }
+    }
 
     beginShape();
     for (let pt of shape){
@@ -141,9 +164,39 @@ function draw() {
 
 
 
-function mousePressed(){
-    blobPoints = []; // Reset points for a new shape
-    blobPoints.push(createVector(mouseX, mouseY)); // Add the first point
+function mousePressed() {
+  // Check if the click is inside any shape
+  for (let i = geometry.length - 1; i >= 0; i--) {
+      if (isPointInsideShape(createVector(mouseX, mouseY), geometry[i])) {
+          // If inside, remove the shape
+          geometry.splice(i, 1);
+          // Also, remove associated properties to keep arrays in sync
+          randomx.splice(i, 1);
+          randomy.splice(i, 1);
+          facx.splice(i, 1);
+          facy.splice(i, 1);
+          randscalex.splice(i, 1);
+          randscaley.splice(i, 1);
+          randscalebotx.splice(i, 1);
+          randscaleboty.splice(i, 1);
+          randtrans.splice(i, 1);
+          // Assuming you want to stop checking once you've found and removed a shape
+          return;
+      }
+  }
+  // If no shape contains the click, add a new shape
+  blobPoints = []; // Reset points for a new shape
+  blobPoints.push(createVector(mouseX, mouseY)); // Add the first point
+}
+
+function sizeConstraint(shape){
+  const yvals = shape.map(point => point.y);
+  const maxy = Math.max(...yvals);
+  const miny = Math.min(...yvals);
+  const xvals = shape.map(point => point.x);
+  const maxx = Math.max(...xvals);
+  const minx = Math.min(...xvals);
+  return (maxy - miny <= dimy && maxx-minx<=dimx); // Adjust to your actual height constraint
 }
 
 function mouseDragged() {
@@ -155,8 +208,8 @@ function mouseReleased() {
   //if (distance((blobPoints[0].x,blobPoints[0].y),(blobPoints[blobPoints.length - 1].x,blobPoints[blobPoints.length - 1].y)) < 15) 
     blobPoints.push(createVector(blobPoints[0].x,blobPoints[0].y))
     geometry.push([...blobPoints]); // Copy the current blobPoints to geometry
-    randomx.push((Math.random()-0.5)*2);
-    randomy.push((Math.random()-0.5)*2);
+    randomx.push((Math.random()-0.5)*3);
+    randomy.push((Math.random()-0.5)*3);
     facx.push(1);
     facy.push(1);
     blobPoints=[];
@@ -165,6 +218,10 @@ function mouseReleased() {
     randscalebotx.push(Math.random()*defrate+defadj);
     randscaleboty.push(Math.random()*defrate+defadj);
     randtrans.push((Math.random()-0.5)*.2);
+    facxprev.push(1);
+    facyprev.push(1);
+    facxprev1.push(1);
+    facyprev1.push(1);
   }
 
   function distance(a, b) {
@@ -209,6 +266,39 @@ function checkAndResolveOverlaps() {
 
       if (overlapDetected) {
         console.log(`Shape ${i} overlaps with Shape ${j}`);
+        randomx[i]=(Math.random()-0.5)*4;
+        randomy[i]=(Math.random()-0.5)*4;
+        randomx[j]=(Math.random()-0.5)*4;
+        randomy[j]=(Math.random()-0.5)*4;
+        facx[i]=facx[i]*-1;
+        facy[i]=facy[i]*-1;
+        facx[j]=facx[j]*-1;
+        facy[j]=facy[j]*-1;
+
+        let overlapDetected = false;
+        for (let pt of geometry[i]) {
+          if (isPointInsideShape(pt, geometry[j])) {
+            overlapDetected = true;
+            break; // Found overlap, no need to check further
+          }
+        }
+        if (!overlapDetected) {
+          // Also check points of shape j in shape i
+          for (let pt of geometry[j]) {
+            if (isPointInsideShape(pt, geometry[i])) {
+              overlapDetected = true;
+              break; // Found overlap, no need to check further
+            }
+          }
+        }
+
+        // Calculate the center of shape i
+        let centerI = createVector(0, 0);
+        for (let pt of geometry[i]) {
+          centerI.add(pt.x, pt.y);
+        }
+        centerI.div(geometry[i].length);
+
         // Calculate the center of shape j
         let centerJ = createVector(0, 0);
         for (let pt of geometry[j]) {
@@ -216,12 +306,27 @@ function checkAndResolveOverlaps() {
         }
         centerJ.div(geometry[j].length);
 
+        // Determine direction vector from centerI to centerJ
+        let directionIJ = createVector(centerJ.x - centerI.x, centerJ.y - centerI.y);
+        directionIJ.normalize(); // Normalize to get direction only
+
+        // Determine direction vector from centerJ to centerI (opposite of directionIJ)
+        let directionJI = createVector(-directionIJ.x, -directionIJ.y); // Simply negate directionIJ
+
         // Move points of shape i away from the center of shape j
         for (let k = 0; k < geometry[i].length; k++) {
           let pt = geometry[i][k];
-          let direction = createVector(pt.x - centerJ.x, pt.y - centerJ.y);
-          direction.setMag(direction.mag() + 5); // Ensure at least 5px "border"
-          geometry[i][k] = createVector(centerJ.x + direction.x, centerJ.y + direction.y);
+          if (isPointInsideShape(pt, geometry[j])) {
+            geometry[i][k] = createVector(pt.x + directionJI.x * 5, pt.y + directionJI.y * 5); // Move by 10 pixels
+          }
+        }
+
+        // Move points of shape j away from the center of shape i
+        for (let k = 0; k < geometry[j].length; k++) {
+          let pt = geometry[j][k];
+          if (isPointInsideShape(pt, geometry[i])) {
+            geometry[j][k] = createVector(pt.x + directionIJ.x * 5, pt.y + directionIJ.y * 5); // Move by 10 pixels
+          }
         }
       }
     }
