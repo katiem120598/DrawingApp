@@ -19,7 +19,7 @@ function setup() {
   createCanvas(windowWidth-100,windowHeight-50);
   background(0);
   frameRate(60);
-  stroke(255,255,255,0);
+  //stroke(255,255,255,0);
 }
 
 function draw() {
@@ -64,7 +64,6 @@ function draw() {
     let centerX = sumX / shape.length;
     let centerY = sumY / shape.length;
 
-    beginShape();
     for (let pt of shape) {
       // Apply oscillation to the vertex position
       if (frameCount%360==0){
@@ -121,7 +120,11 @@ function draw() {
       else if((pt.y-centerY)<0){
         pt.y = (pt.y-centerY)*boty+centerY;
       }
-      checkAndResolveOverlaps();
+    }
+    checkAndResolveOverlaps();
+
+    beginShape();
+    for (let pt of shape){
       curveVertex(pt.x, pt.y);
     }
     endShape(CLOSE); // Assuming all shapes are closed for simplicity // Assuming all shapes are closed for simplicity
@@ -183,18 +186,44 @@ function mouseReleased() {
     // Odd count means point is inside
     return count % 2 == 1;
 }
+
 function checkAndResolveOverlaps() {
   for (let i = 0; i < geometry.length; i++) {
-      for (let j = 0; j < geometry.length; j++) {
-          if (i == j) continue; // Don't compare a shape with itself
-
-          for (let pt of geometry[i]) {
-              if (isPointInsideShape(pt, geometry[j])) {
-                  // pt from shape i is inside shape j
-                  console.log(`Shape ${i} overlaps with Shape ${j}`);
-                  
-              }
-          }
+    for (let j = i + 1; j < geometry.length; j++) { // Avoid duplicate checks
+      let overlapDetected = false;
+      for (let pt of geometry[i]) {
+        if (isPointInsideShape(pt, geometry[j])) {
+          overlapDetected = true;
+          break; // Found overlap, no need to check further
+        }
       }
+      if (!overlapDetected) {
+        // Also check points of shape j in shape i
+        for (let pt of geometry[j]) {
+          if (isPointInsideShape(pt, geometry[i])) {
+            overlapDetected = true;
+            break; // Found overlap, no need to check further
+          }
+        }
+      }
+
+      if (overlapDetected) {
+        console.log(`Shape ${i} overlaps with Shape ${j}`);
+        // Calculate the center of shape j
+        let centerJ = createVector(0, 0);
+        for (let pt of geometry[j]) {
+          centerJ.add(pt.x, pt.y);
+        }
+        centerJ.div(geometry[j].length);
+
+        // Move points of shape i away from the center of shape j
+        for (let k = 0; k < geometry[i].length; k++) {
+          let pt = geometry[i][k];
+          let direction = createVector(pt.x - centerJ.x, pt.y - centerJ.y);
+          direction.setMag(direction.mag() + 5); // Ensure at least 5px "border"
+          geometry[i][k] = createVector(centerJ.x + direction.x, centerJ.y + direction.y);
+        }
+      }
+    }
   }
 }
