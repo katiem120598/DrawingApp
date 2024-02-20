@@ -23,6 +23,33 @@ var dimy;
 let bgval = 0;
 let shapefill = [];
 
+document.addEventListener('DOMContentLoaded', function () {
+  const clearButton = document.getElementById('clear');
+
+  clearButton.addEventListener('click', function(event) {
+      // Clear the shapes from the geometry array and other related arrays
+      geometry.length = 0;
+      randomx.length = 0;
+      randomy.length = 0;
+      facx.length = 0;
+      facy.length = 0;
+      randscalex.length = 0;
+      randscaley.length = 0;
+      randscalebotx.length = 0;
+      randscaleboty.length = 0;
+      randtrans.length = 0;
+      shapefill.length = 0;
+      // Any other arrays you wish to clear...
+
+      console.log('Shapes cleared!');
+
+      // Redraw or update the canvas to reflect the cleared shapes
+      background(bgval); // Assuming bgval is the background color
+      // If using p5.js or similar, you might need to explicitly call a redraw function here
+  });
+});
+
+
 function setup() {
   pixelDensity(1);
   dimx = windowHeight-200;
@@ -68,7 +95,7 @@ function draw() {
 
   updatePixels();
   shapecent=[];
-  
+
   // Draw all previous shapes
   for (let i = 0; i < geometry.length; i++) {
     let shape = geometry[i];
