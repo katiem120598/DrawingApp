@@ -20,9 +20,12 @@ let facxprev1=[];
 let facyprev1=[];
 var dimx;
 var dimy;
+let bgval = 0;
+let shapefill = [];
 
 function setup() {
-  dimx = windowHeight-400;
+  pixelDensity(1);
+  dimx = windowHeight-200;
   dimy = dimx;
   createCanvas(dimx,dimy);
   background(0);
@@ -31,7 +34,39 @@ function setup() {
 }
 
 function draw() {
-  background(0);
+
+  background(bgval);
+  loadPixels();
+  let bg = document.getElementById('noise');
+  const bgcol = document.getElementById('background');
+  const fillcol =document.getElementById('fill');
+  
+  const clearall = document.getElementById('clear');
+    
+  if(!bg.checked){
+    console.log("true")
+    background(0);
+    bgval = hexToRgb(bgcol.value);
+  }
+  else{
+    for(let y = 0; y < height; y++) {
+      const ny = (mouseY / height) * 255;
+        for (let x = 0; x < width; x++) {
+            let noise1 = Math.random() * 50
+            let noise2 = Math.random() * 220
+          const nx = (mouseX / width) * 255;
+          let index = (x + y * width) * 4;
+  
+          pixels[index+0] = 255;
+          pixels[index+1] = nx + noise1;
+          pixels[index+2] = ny + noise2;
+          pixels[index+3] = 255;
+    }}
+  }
+
+
+
+  updatePixels();
   shapecent=[];
   
   // Draw all previous shapes
@@ -44,6 +79,10 @@ function draw() {
     let scaley = randscaley[i];
     let botx = randscalebotx[i];
     let boty = randscaleboty[i];
+
+
+
+
      
   /*
     scalex[i] = Math.random()*1.5
@@ -145,12 +184,14 @@ function draw() {
         randtrans.splice(i, 1);
       }
     }
-
+    push();
+    fill(shapefill[i]);
     beginShape();
     for (let pt of shape){
       curveVertex(pt.x, pt.y);
     }
     endShape(CLOSE); // Assuming all shapes are closed for simplicity // Assuming all shapes are closed for simplicity
+    pop();
   }
 
   // Draw the current blob points
@@ -158,7 +199,8 @@ function draw() {
   for (let i = 0; i < blobPoints.length; i++) {
     curveVertex(blobPoints[i].x, blobPoints[i].y);
   }
-  endShape()
+  endShape();
+
 }
 
 
@@ -166,7 +208,11 @@ function draw() {
 
 function mousePressed() {
   // Check if the click is inside any shape
-  for (let i = geometry.length - 1; i >= 0; i--) {
+  const onclick = document.getElementById('remove');
+  const fill = document.getElementById('fill');
+  let fillcol = hexToRgb(fill.value);
+  if(onclick.checked){
+    for (let i = geometry.length - 1; i >= 0; i--) {
       if (isPointInsideShape(createVector(mouseX, mouseY), geometry[i])) {
           // If inside, remove the shape
           geometry.splice(i, 1);
@@ -184,6 +230,17 @@ function mousePressed() {
           return;
       }
   }
+  }
+  else{
+    for (let i = geometry.length - 1; i >= 0; i--) {
+      if (isPointInsideShape(createVector(mouseX, mouseY), geometry[i])) {
+          // If inside, remove the shape
+          shapefill[i]=fillcol;
+          return;
+      }
+  }
+  }
+
   // If no shape contains the click, add a new shape
   blobPoints = []; // Reset points for a new shape
   blobPoints.push(createVector(mouseX, mouseY)); // Add the first point
@@ -222,6 +279,7 @@ function mouseReleased() {
     facyprev.push(1);
     facxprev1.push(1);
     facyprev1.push(1);
+    shapefill.push((255,255,255))
   }
 
   function distance(a, b) {
@@ -229,6 +287,29 @@ function mouseReleased() {
     const dy = a.y - b.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
+
+  function hexToRgb(hex) {
+    // Remove the hash at the start if it's there
+    hex = hex.replace(/^#/, '');
+
+    // Parse the r, g, b values
+    let r, g, b;
+    if (hex.length === 3) {
+        // In case of shorthand format (#FFF), double each character
+        r = parseInt(hex.charAt(0) + hex.charAt(0), 16);
+        g = parseInt(hex.charAt(1) + hex.charAt(1), 16);
+        b = parseInt(hex.charAt(2) + hex.charAt(2), 16);
+    } else if (hex.length === 6) {
+        // In case of full format (#FFFFFF)
+        r = parseInt(hex.substring(0, 2), 16);
+        g = parseInt(hex.substring(2, 4), 16);
+        b = parseInt(hex.substring(4, 6), 16);
+    } else {
+        throw new Error('Invalid HEX color.');
+    }
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
 
   function isPointInsideShape(point, shape) {
     let count = 0;

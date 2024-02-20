@@ -16,3 +16,67 @@ canvas {
   left: 0;
   right: 0;
 }
+
+.horizontal-left{
+  display: inline-block;
+  text-align: left;
+}
+.blockdisp{
+  display:flex;
+  flex-direction: column;
+  width: max-content;
+}
+
+
+.navbar-contents {
+  position: absolute;
+  text-align: right;
+  top: 100px;
+  right: 100px; /* Adjusts the navbar to hug the right side */
+  z-index: 1000; /* Ensures it's above the canvas */
+}
+
+/* Additional styling for the navbar to make it visually fitting */
+.navbar-contents .dropdown-button {
+  cursor: pointer;
+  background-color: #eee; /* Example color */
+  border: none;
+  width: fit-content;
+  width: 80px;
+  height: 60px;
+  padding: 10px;
+}
+
+.navbar-contents .navlist {
+  display: none; /* Hidden by default, shown on button click */
+  list-style-type: none;
+  text-align: left;
+  padding: 10;
+  margin: 10;
+  background-color: #f9f9f9; /* Example color */
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.navlist{
+  width: fit-content;
+  padding: 10px;
+}
+
+.navbar-contents .navlist li a {
+  right: 0;
+  text-align: left;
+  display: block;
+  color: black;
+  padding: 10px;
+  text-decoration: none;
+}
+
+/* Hover effects */
+.navbar-contents .navlist li a:hover {
+  background-color: #ddd;
+}
+
+.dropdown-button .fa {
+  font-size: 24px; /* Adjust the size as needed */
+  color: #333; /* Adjust the color as needed */
+}
