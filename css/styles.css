@@ -176,6 +176,23 @@ p,body{
   font-family: Work Sans, sans-serif;
   margin: 0;
 }
+.whitetext{
+  font-style:oblique;
+  color:white;
+  font-size:36px;
+}
+.footer{
+  font-style:oblique;
+  color:#ddd;
+  font-size:36px;
+  display:block;
+  position:absolute;
+  top:95%;
+  left:50%;
+  transform: translate(-50%, -94%);
+  font-size:15px;
+  text-align:center;
+}
 button{
   font-size: 15px;
   font-weight: 500;
